@@ -1,0 +1,26 @@
+# Module for update Route53 hosted zone record set with current global IP address. 
+#
+# Usage: ansible-playbook -i inventory site.yml
+
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    zone_name: "example.com"
+    record_name: "www"
+  tasks:
+    - name: get ip
+      uri: url=http://urban-theory.net/ip.php
+           return_content=yes
+      register: global_ip
+      failed_when: global_ip.content | match("^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$") == false
+
+    - name: Set domain name
+      route53:
+        command: create
+        zone: "{{ zone_name }}"
+        type: A
+        value: "{{ global_ip.content }}"
+        overwrite: yes
+        record: "{{ record_name }}.{{ zone_name }}"
+        ttl: 300
+
