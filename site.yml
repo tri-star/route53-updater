@@ -5,8 +5,8 @@
 - hosts: 127.0.0.1
   connection: local
   vars:
-    zone_name: "example.com"
-    record_name: "www"
+    zone_name: "urban-theory.net"
+    record_name: "local"
   tasks:
     - name: get ip
       uri: url=http://urban-theory.net/ip.php
@@ -16,11 +16,11 @@
 
     - name: Set domain name
       route53:
-        command: create
+        command: "create"
         zone: "{{ zone_name }}"
-        type: A
+        type: "A"
         value: "{{ global_ip.content }}"
-        overwrite: yes
+        overwrite: "yes"
         record: "{{ record_name }}.{{ zone_name }}"
         ttl: 300
 
